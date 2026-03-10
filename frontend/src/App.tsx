@@ -4,13 +4,19 @@ import ExplanationPanel from "./components/ExplanationPanel";
 import DiagramPanel from "./components/DiagramPanel";
 import HistoryPanel from "./components/HistoryPanel";
 
+interface HistoryItem {
+  prompt: string;
+  explanation: string;
+  mermaidCode: string;
+}
+
 function App() {
-  const [prompt, setPrompt] = useState("");
-  const [explanation, setExplanation] = useState("");
-  const [mermaidCode, setMermaidCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [history, setHistory] = useState([]);
+  const [prompt, setPrompt] = useState<string>("");
+  const [explanation, setExplanation] = useState<string>("");
+  const [mermaidCode, setMermaidCode] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -36,23 +42,26 @@ function App() {
       setExplanation(data.explanation);
       setMermaidCode(data.mermaid_code);
 
-      // Save to history (most recent first, no duplicates)
-      setHistory(prev => {
-        const filtered = prev.filter(item => item.prompt !== prompt.trim());
+      setHistory((prev: HistoryItem[]) => {
+        const filtered = prev.filter((item: HistoryItem) => item.prompt !== prompt.trim());
         return [
           { prompt: prompt.trim(), explanation: data.explanation, mermaidCode: data.mermaid_code },
           ...filtered,
         ];
       });
 
-    } catch (err) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectHistory = (item) => {
+  const handleSelectHistory = (item: HistoryItem) => {
     setPrompt(item.prompt);
     setExplanation(item.explanation);
     setMermaidCode(item.mermaidCode);
@@ -106,7 +115,7 @@ function App() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: "100vh",
     padding: "40px 20px",
