@@ -19,7 +19,7 @@ app = FastAPI(
 # Allow frontend (React) to talk to this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React dev server default port
+    allow_origins=["http://localhost:5173", "https://ai-arch-diagram-generator.vercel.app"],  # React dev server default port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
