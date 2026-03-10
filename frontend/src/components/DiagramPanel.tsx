@@ -38,32 +38,26 @@ function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
     renderDiagram();
   }, [mermaidCode]);
 
-  const handleExportPNG = async () => {
-  if (!ref.current) return;
-  try {
-    const dataUrl = await toPng(ref.current, {
-      backgroundColor: "#1a1d27",
-      pixelRatio: 2,
-    });
-    const a = document.createElement("a");
-    a.download = "architecture-diagram.png";
-    a.href = dataUrl;
-    a.click();
-  } catch (err) {
-    console.error("PNG export failed:", err);
-  }
-};
-
-  const handleExportPNG = async () => {
+  const handleExportSVG = () => {
     const svgEl = ref.current?.querySelector("svg");
     if (!svgEl) return;
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "architecture-diagram.svg";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPNG = async () => {
+    if (!ref.current) return;
     try {
-      svgEl.style.background = "#1a1d27";
-      const dataUrl = await toPng(svgEl, {
+      const dataUrl = await toPng(ref.current, {
         backgroundColor: "#1a1d27",
         pixelRatio: 2,
       });
-      svgEl.style.background = "";
       const a = document.createElement("a");
       a.download = "architecture-diagram.png";
       a.href = dataUrl;
