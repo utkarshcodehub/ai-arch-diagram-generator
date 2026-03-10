@@ -38,18 +38,21 @@ function DiagramPanel({ mermaidCode }: DiagramPanelProps) {
     renderDiagram();
   }, [mermaidCode]);
 
-  const handleExportSVG = () => {
-    const svgEl = ref.current?.querySelector("svg");
-    if (!svgEl) return;
-    const svgData = new XMLSerializer().serializeToString(svgEl);
-    const blob = new Blob([svgData], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
+  const handleExportPNG = async () => {
+  if (!ref.current) return;
+  try {
+    const dataUrl = await toPng(ref.current, {
+      backgroundColor: "#1a1d27",
+      pixelRatio: 2,
+    });
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "architecture-diagram.svg";
+    a.download = "architecture-diagram.png";
+    a.href = dataUrl;
     a.click();
-    URL.revokeObjectURL(url);
-  };
+  } catch (err) {
+    console.error("PNG export failed:", err);
+  }
+};
 
   const handleExportPNG = async () => {
     const svgEl = ref.current?.querySelector("svg");
